@@ -66,7 +66,7 @@ function validarCampos($conn,$tipo) {
     return $errores;
 }
 
-function listarEventos($conn, $filtro, $orden = 'nombre_evento', $direccion = 'ASC') {
+function listarEventos($conn, $filtro, $orden = 'nombre_evento', $direccion = 'ASC' , $limite = 10 , $offset = 0) {
     $sql = "SELECT e.*, o.nombre AS organizador 
             FROM eventos e 
             JOIN organizadores o ON e.id_organizador = o.id";
@@ -74,6 +74,7 @@ function listarEventos($conn, $filtro, $orden = 'nombre_evento', $direccion = 'A
     if ($filtro) {
         $sql .= " WHERE e.nombre_evento LIKE '%" . $conn->real_escape_string($filtro) . "%'";
     }
+    
 
     // Ordenar por la columna especificada
     $ordenValido = in_array($orden, ['nombre_evento', 'tipo_deporte', 'fecha', 'hora', 'ubicacion', 'organizador']);
@@ -82,8 +83,10 @@ function listarEventos($conn, $filtro, $orden = 'nombre_evento', $direccion = 'A
     if ($ordenValido && $direccionValida) {
         $sql .= " ORDER BY $orden $direccion";
     }
+    $sql .= "  LIMIT $limite OFFSET $offset";
 
-    return $conn->query($sql);
+
+    return $conn->query($sql);  
 }
 function listarOrganizadores($conn) {
     $sql = "SELECT * FROM organizadores";
